@@ -2,14 +2,12 @@ module ARM (
     input clk, rst
 );
 
-  wire forward_enanble=0;
+  wire forward_enanble=1;
 
-	wire freeze=0, hazard=0, memFreeze=0,
-			rstSwitch=0;	// TODO wtf was forwardingFreeze ?
-	assign freeze = hazard | memFreeze;
-	assign rstSwitch = rst;
-	assign outFreeze = freeze;
-	assign outMemFreeze = memFreeze;
+	wire hazard, freeze;
+	
+	assign freeze = hazard;
+
 	// IF Stage to IF Stage Reg wires
 	wire[31:0] PC, Instruction;
 
@@ -22,11 +20,10 @@ module ARM (
 	wire[31:0] Val_Rn, Val_Rm;
 	wire[11:0] Shift_operand;
 	wire[23:0] Signed_imm_24;
-	wire[3:0] destAddress;
-	wire[31:0] ID_Stage_PC;
 
 	// ID Stage Reg to EXE Stage wires
 	wire ID_out_WB_EN, ID_out_MEM_R_EN, ID_out_MEM_W_EN, ID_out_B, ID_out_S;
+	wire[3:0] ID_SR;
 	wire[3:0] ID_out_EXE_CMD;
 	wire[31:0] ID_out_Val_Rm, ID_out_Val_Rn, EXE_out_Val_Rm;
 	wire ID_out_imm;
@@ -132,7 +129,7 @@ module ARM (
 		.Signed_imm_24_IN(Signed_imm_24),
 		.Dest_IN(Dest),
 		.SR_In(SR),
-		.freeze(memFreeze),
+
 		.WB_EN(ID_out_WB_EN),
 		.MEM_R_EN(ID_out_MEM_R_EN),
 		.MEM_W_EN(ID_out_MEM_W_EN),
@@ -162,7 +159,7 @@ module ARM (
 		.imm(ID_out_imm),
 		.Shift_operand(ID_out_Shift_operand),
 		.Signed_imm_24(ID_out_Signed_imm_24),
-		.SR(SR),
+		.SR(ID_SR),
 		.ALU_result_reg(EXE_Reg_out_ALU_result),
 		.WB_WB_DEST(Result_WB),
 		.sel_src1(Sel_src1),
@@ -182,7 +179,7 @@ module ARM (
 		.ALU_result_in(ALU_result),
 		.ST_val_in(EXE_out_Val_Rm),
 		.Dest_in(ID_out_Dest),
-		.freeze(memFreeze),
+
 		.WB_EN(EXE_Reg_out_WB_EN),
 		.MEM_R_EN(EXE_Reg_out_MEM_R_EN),
 		.MEM_W_EN(EXE_Reg_out_MEM_W_EN),
@@ -194,7 +191,7 @@ module ARM (
 	MEM_Stage mem_stage(
 		.clk(clk),
 		.rst(rst),
-		.freeze(memFreeze),
+
 		.MEM_R_EN(EXE_Reg_out_MEM_R_EN),
 		.MEM_W_EN(EXE_Reg_out_MEM_W_EN),
 		.ALU_Res(EXE_Reg_out_ALU_result),
@@ -210,7 +207,7 @@ module ARM (
 		.ALU_result_in(EXE_Reg_out_ALU_result),
 		.Mem_read_value_in(MEM_Stage_out_MEM_result),
 		.Dest_in(EXE_Reg_out_Dest),
-		.freeze(memFreeze),
+	
 		.WB_en(MEM_Stage_out_WB_EN),
 		.MEM_R_en(MEM_Stage_out_MEM_R_EN), 
 		.ALU_result(MEM_Stage_Reg_out_ALU_result),

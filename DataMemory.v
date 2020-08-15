@@ -7,7 +7,7 @@ module DataMemory (
 reg [31:0] memory [0:63];
 
 
-assign value = MEM_R_EN ? memory[(((ALU_Res - 32'd1024) >> 2))]: 32'bx;
+assign value = MEM_R_EN ? memory[(((ALU_Res - 32'd1024) >> 2))]: 32'bz;
 
 always @(posedge clk) begin
     if (MEM_W_EN) begin

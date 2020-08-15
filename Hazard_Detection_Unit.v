@@ -20,7 +20,7 @@ module Hazard_Detection_Unit(
                     Two_src == 1'b1 && Mem_WB_EN == 1'b1 && src2 == Mem_Dest ? 1'b1 : 0
                   )));
   
-  assign hazard_detected = ~forward_en ? hazard : (hazard && is_branch) || (hazard && MEM_R_EN);
+  assign hazard_detected = (forward_en == 1'b0) ? hazard : ((hazard && is_branch) || (hazard && MEM_R_EN));
 
 endmodule
 

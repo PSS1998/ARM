@@ -6,13 +6,13 @@ module RegisterFile(
   output[31:0] reg1, reg2
 );
 
-  reg[31:0] registerFile[0:15];
+  reg[31:0] registerFile[0:14];
   
   integer i;
   always @(negedge clk, posedge rst) begin
     if (rst) begin
-      for (i = 0; i < 16; i= i + 1) begin
-        registerFile[i] <= i;
+      for (i = 0; i < 15; i= i + 1) begin
+        registerFile[i] <= 0;
       end
     end
     else if (writeBackEn) begin

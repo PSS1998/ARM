@@ -10,7 +10,6 @@ module ID_Stage_Reg(
   input[23:0] Signed_imm_24_IN,
   input[3:0] Dest_IN,
   input[3:0] SR_In,
-  input freeze,
 
   output reg WB_EN, MEM_R_EN, MEM_W_EN, B, S,
   output reg[3:0] EXE_CMD,
@@ -34,7 +33,7 @@ module ID_Stage_Reg(
       EXE_CMD <= 0; WB_EN <=0; MEM_R_EN <= 0; MEM_W_EN <= 0; B <= 0; S <= 0; SR <= 0;
       ID_reg_out_src1 <= 0; ID_reg_out_src2 <= 0;
 	  end
-    else if(~freeze) begin
+    else begin
       PC <= PC_in; Dest <= Dest_IN; Signed_imm_24 <= Signed_imm_24_IN; Shift_operand <= Shift_operand_IN; imm <= imm_IN; Val_Rm <= Val_Rm_IN; Val_Rn <= Val_Rn_IN;
       EXE_CMD <= EXE_CMD_IN; WB_EN <=WB_EN_IN; MEM_R_EN <= MEM_R_EN_IN; MEM_W_EN <= MEM_W_EN_IN; B <= B_IN; S <= S_IN; SR <= SR_In;
       ID_reg_out_src1 <= src1; ID_reg_out_src2 <= src2;

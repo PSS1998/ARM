@@ -1,8 +1,8 @@
 module ControlUnit(
-  input s, i,
+  input s,
   input[1:0] mode,
   input[3:0] opCode,
-  output WB_EN, MEM_R_EN, MEM_W_EN, B, S, Imm,
+  output WB_EN, MEM_R_EN, MEM_W_EN, B, S,
   output[3:0] EXE_CMD
 );
 
@@ -47,7 +47,5 @@ module ControlUnit(
 
   assign S = mode== ARITHMETIC ? ((opCode == CMP || opCode == TST ) ? 1'b1 : s) :
               is_memop_mode ? s : 1'b0;
-
-  assign Imm = is_arithmetic_mode ? i : (is_branch_mode  ? 1'b1 : 1'b0);
 
 endmodule
