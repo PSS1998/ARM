@@ -14,11 +14,11 @@ module Hazard_Detection_Unit(
 
   wire hazard;
   
-  assign hazard = ( Exe_WB_EN == 1'b1 && src1 == Exe_Dest) ? 1'b1 : (
-                    Mem_WB_EN == 1'b1 && src1 == Mem_Dest ? 1'b1 : (
-                    Two_src == 1'b1 && Exe_WB_EN == 1'b1 && src2 == Exe_Dest ? 1'b1 : (
-                    Two_src == 1'b1 && Mem_WB_EN == 1'b1 && src2 == Mem_Dest ? 1'b1 : 0
-                  )));
+  assign hazard = ( (Two_src == 1'b0) && (Exe_WB_EN == 1'b1) && (src1 == Exe_Dest) ||
+                    (Two_src == 1'b0) && (Mem_WB_EN == 1'b1) && (src1 == Mem_Dest) ||
+                    (Two_src == 1'b1) && (Exe_WB_EN == 1'b1) && (src2 == Exe_Dest) ||
+                    (Two_src == 1'b1) && (Mem_WB_EN == 1'b1) && (src2 == Mem_Dest) ) ?
+                  1'b1 : 1'b0;
   
   assign hazard_detected = (forward_en == 1'b0) ? hazard : ((hazard && is_branch) || (hazard && MEM_R_EN));
 

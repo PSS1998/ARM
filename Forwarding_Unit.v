@@ -7,15 +7,14 @@ module Forwarding_Unit(
   output[1:0] Sel_src1, Sel_src2
 );
 
-    // TODO handle hazard here ?
     assign Sel_src1 = ~en ? 2'd0 
-            : (MEM_WB_en && src1 == MEM_Dest) ? 2'd1 
-            : (WB_WB_en && src1 == WB_Dest) ? 2'd2 
+            : (MEM_WB_en && (src1 == MEM_Dest)) ? 2'd1 
+            : (WB_WB_en && (src1 == WB_Dest))   ? 2'd2 
             : 2'd0; 
 
     assign Sel_src2 = ~en ? 2'd0 
-            : (MEM_WB_en && src2 == MEM_Dest) ? 2'd1 
-            : (WB_WB_en && src2 == WB_Dest) ? 2'd2 
+            : (MEM_WB_en && (src2 == MEM_Dest)) ? 2'd1 
+            : (WB_WB_en && (src2 == WB_Dest))   ? 2'd2 
             : 2'd0;   
 
 endmodule

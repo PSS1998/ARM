@@ -3,25 +3,24 @@ module ARM (
 );
 
   wire forward_enanble=1;
-
 	wire hazard, freeze;
 	
 	assign freeze = hazard;
 
-	// IF Stage to IF Stage Reg wires
+	// IF_Stage to IF_Stage_Reg wires
 	wire[31:0] PC, Instruction;
 
-	// IF Stage Reg to ID Stage wires
+	// IF_Stage_Reg to ID_Stage wires
 	wire[31:0] IF_Reg_PC_out, IF_Reg_Ins_out;
 
-	// ID Stage to ID Stage Reg wires
+	// ID_Stage out wires
 	wire imm, WB_EN, MEM_R_EN, MEM_W_EN, B, S, Two_src;
 	wire[3:0] EXE_CMD, Dest, src1, src2, ID_reg_out_src1, ID_reg_out_src2;
 	wire[31:0] Val_Rn, Val_Rm;
 	wire[11:0] Shift_operand;
 	wire[23:0] Signed_imm_24;
 
-	// ID Stage Reg to EXE Stage wires
+	// ID_Stage_Reg to EXE_Stage wires
 	wire ID_out_WB_EN, ID_out_MEM_R_EN, ID_out_MEM_W_EN, ID_out_B, ID_out_S;
 	wire[3:0] ID_SR;
 	wire[3:0] ID_out_EXE_CMD;
@@ -32,33 +31,32 @@ module ARM (
 	wire[3:0] ID_out_Dest;
 	wire[31:0] ID_out_PC;
 
-	// EXE Stage to EXE Stage Reg wires
+	// EXE_Stage to EXE_Stage_Reg wires
 	wire[31:0] ALU_result, Br_addr;
   
-	// EXE Stage to SR wires
+	// EXE_Stage to StatusRegister wires
 	wire[3:0] status;
 
-	// EXE Stage Reg out wires
+	// EXE_Stage_Reg out wires
 	wire EXE_Reg_out_WB_EN, EXE_Reg_out_MEM_R_EN, EXE_Reg_out_MEM_W_EN;
 	wire[31:0] EXE_Reg_out_ALU_result, EXE_Reg_out_ST_val;
 	wire[3:0] EXE_Reg_out_Dest;
 
-	// MEM Stage to MEM Stage Reg wires
+	// MEM_Stage to MEM_Stage_Reg wires
 	wire[31:0] MEM_Stage_out_MEM_result;
 
-	// MEM Stage Reg out wires
+	// MEM_Stage_Reg out wires
 	wire[31:0] MEM_Stage_Reg_out_ALU_result, MEM_Stage_Reg_out_MEM_read_value;
 	wire[3:0] MEM_Stage_Reg_out_Dest;
 	wire MEM_Stage_out_WB_EN, MEM_Stage_out_MEM_R_EN;
 
-	// SR out wires
+	// StatusRegister out wires
 	wire[3:0] SR;
 
-	// WB out wires
+	// WB_Stage out wires
 	wire[31:0] Result_WB;
-//   wire writeBackEn;
-//   wire[3:0] Dest_WB;
-
+	
+  // Forwaring_Unit out wires
 	wire[1:0] Sel_src1, Sel_src2;
 
 	IF_Stage if_stage(
@@ -147,6 +145,28 @@ module ARM (
 		.ID_reg_out_src1(ID_reg_out_src1),
 		.ID_reg_out_src2(ID_reg_out_src2)
 	);
+	
+	Hazard_Detection_Unit hazard_detection_unit(
+		.src1(src1),
+		.src2(src2),
+		.Exe_Dest(ID_out_Dest),
+		.Exe_WB_EN(ID_out_WB_EN),
+		.Two_src(Two_src),
+		.Mem_Dest(EXE_Reg_out_Dest),
+		.Mem_WB_EN(EXE_Reg_out_WB_EN),
+		.forward_en(forward_enanble),
+		.is_branch(B),
+		.MEM_R_EN(ID_out_MEM_R_EN),
+		.hazard_detected(hazard)
+	);
+	
+	StatusRegister status_reg(
+		.clk(clk),
+		.rst(rst),
+		.S(ID_out_S),
+		.Status_Bits(status),
+		.Status_Reg(SR)
+	);
 
 	EXE_Stage exe_stage(
 		.clk(clk),
@@ -187,6 +207,18 @@ module ARM (
 		.ST_val(EXE_Reg_out_ST_val),
 		.Dest(EXE_Reg_out_Dest)
 	);
+	
+	Forwarding_Unit forwarding_unit(
+		.en(forward_enanble),
+		.src1(ID_reg_out_src1),
+		.src2(ID_reg_out_src2),
+		.WB_Dest(MEM_Stage_Reg_out_Dest),
+		.MEM_Dest(EXE_Reg_out_Dest),
+		.WB_WB_en(MEM_Stage_out_WB_EN),
+		.MEM_WB_en(EXE_Reg_out_WB_EN),
+		.Sel_src1(Sel_src1),
+		.Sel_src2(Sel_src2)
+	);
 
 	MEM_Stage mem_stage(
 		.clk(clk),
@@ -220,40 +252,6 @@ module ARM (
 		.MEM_Res(MEM_Stage_Reg_out_MEM_read_value),
 		.MEM_R_EN(MEM_Stage_out_MEM_R_EN),
 		.out(Result_WB)
-	);
-
-	Hazard_Detection_Unit hazard_detection_unit(
-		.src1(src1),
-		.src2(src2),
-		.Exe_Dest(ID_out_Dest),
-		.Exe_WB_EN(ID_out_WB_EN),
-		.Two_src(Two_src),
-		.Mem_Dest(EXE_Reg_out_Dest),
-		.Mem_WB_EN(EXE_Reg_out_WB_EN),
-		.forward_en(forward_enanble),
-		.is_branch(B),
-		.MEM_R_EN(ID_out_MEM_R_EN),
-		.hazard_detected(hazard)
-	);
-	
-	Forwarding_Unit forwarding_unit(
-		.en(forward_enanble),
-		.src1(ID_reg_out_src1),
-		.src2(ID_reg_out_src2),
-		.WB_Dest(MEM_Stage_Reg_out_Dest),
-		.MEM_Dest(EXE_Reg_out_Dest),
-		.WB_WB_en(MEM_Stage_out_WB_EN),
-		.MEM_WB_en(EXE_Reg_out_WB_EN),
-		.Sel_src1(Sel_src1),
-		.Sel_src2(Sel_src2)
-	);
-
-	StatusRegister status_reg(
-		.clk(clk),
-		.rst(rst),
-		.S(ID_out_S),
-		.Status_Bits(status),
-		.Status_Reg(SR)
 	);
 
 endmodule

@@ -62,6 +62,7 @@ module IF_Stage(
   assign Instruction = ins;
 
   reg32 pc(.clk(clk), .rst(rst), .en(~freeze), .reg_in(pc_in), .reg_out(pc_out));
+  
   assign PC = pc_out + 1;
   assign pc_in = Branch_taken ? BranchAddr : PC ;
 

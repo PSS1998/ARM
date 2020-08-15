@@ -35,4 +35,5 @@ module EXE_Stage(
 
   
   assign EXE_out_Val_Rm = val2GenIn;
+  
 endmodule
