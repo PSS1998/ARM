@@ -6,17 +6,14 @@ module IF_Stage_Reg(
 
   always@(posedge clk, posedge rst) begin
     if(rst) begin
-      PC <= 0;
-      Instruction <= 0;
+      PC <= 0; Instruction <= 0;
     end
 	  else if (flush) begin
-		  PC <= 0;
-      Instruction <= 0;
+		  PC <= 0; Instruction <= 0;
 	  end
     else begin
       if(~freeze) begin
-        PC <= PC_in;
-        Instruction <= Instruction_in;
+        PC <= PC_in; Instruction <= Instruction_in;
       end
     end
   end

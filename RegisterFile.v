@@ -23,6 +23,4 @@ module RegisterFile(
   assign reg1 = registerFile[src1];
   assign reg2 = registerFile[src2];
 
-
-
 endmodule

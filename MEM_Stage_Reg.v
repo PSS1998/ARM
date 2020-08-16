@@ -10,18 +10,10 @@ module MEM_Stage_Reg(
 
   always@(posedge clk, posedge rst) begin
     if(rst) begin
-      WB_en <= 0;
-      MEM_R_en <= 0;
-      ALU_result <= 0;
-      Mem_read_value <= 0;
-      Dest <= 0;
+      WB_en <= 0; MEM_R_en <= 0; ALU_result <= 0; Mem_read_value <= 0; Dest <= 0;
     end
     else begin
-      WB_en <= WB_en_in;
-      MEM_R_en <= MEM_R_en_in;
-      ALU_result <= ALU_result_in;
-      Mem_read_value <= Mem_read_value_in;
-      Dest <= Dest_in;
+      WB_en <= WB_en_in; MEM_R_en <= MEM_R_en_in; ALU_result <= ALU_result_in; Mem_read_value <= Mem_read_value_in; Dest <= Dest_in;
     end
   end
 

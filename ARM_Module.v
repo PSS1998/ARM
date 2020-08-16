@@ -2,7 +2,7 @@ module ARM (
     input clk, rst
 );
 
-  wire forward_enanble=1;
+  wire forward_enanble=0;
 	wire hazard, freeze;
 	
 	assign freeze = hazard;
@@ -65,6 +65,7 @@ module ARM (
 		.freeze(freeze),
 		.Branch_taken(ID_out_B),
 		.BranchAddr(Br_addr),
+		
 		.PC(PC),
 		.Instruction(Instruction)
 	);
@@ -76,6 +77,7 @@ module ARM (
 		.flush(ID_out_B),
 		.PC_in(PC),
 		.Instruction_in(Instruction),
+		
 		.PC(IF_Reg_PC_out),
 		.Instruction(IF_Reg_Ins_out)
 	);
@@ -89,6 +91,7 @@ module ARM (
 		.Dest_wb(MEM_Stage_Reg_out_Dest),
 		.hazard(hazard),
 		.SR(SR),
+		
 		.WB_EN(WB_EN),
 		.MEM_R_EN(MEM_R_EN),
 		.MEM_W_EN(MEM_W_EN),
@@ -106,11 +109,10 @@ module ARM (
 		.Two_src(Two_src)
 	);
 	
-	// TODO Flush with ID_out_B or B
 	ID_Stage_Reg id_stage_reg(
 		.clk(clk),
 		.rst(rst),
-		.flush(ID_out_B), //This should be B not ID_out_B 
+		.flush(ID_out_B),
 		.WB_EN_IN(WB_EN),
 		.MEM_R_EN_IN(MEM_R_EN),
 		.MEM_W_EN_IN(MEM_W_EN),
@@ -155,8 +157,8 @@ module ARM (
 		.Mem_Dest(EXE_Reg_out_Dest),
 		.Mem_WB_EN(EXE_Reg_out_WB_EN),
 		.forward_en(forward_enanble),
-		.is_branch(B),
 		.MEM_R_EN(ID_out_MEM_R_EN),
+		
 		.hazard_detected(hazard)
 	);
 	
@@ -165,6 +167,7 @@ module ARM (
 		.rst(rst),
 		.S(ID_out_S),
 		.Status_Bits(status),
+		
 		.Status_Reg(SR)
 	);
 
@@ -184,6 +187,7 @@ module ARM (
 		.WB_WB_DEST(Result_WB),
 		.sel_src1(Sel_src1),
 		.sel_src2(Sel_src2),
+		
   		.ALU_result(ALU_result),
 		.Br_addr(Br_addr),
 		.EXE_out_Val_Rm(EXE_out_Val_Rm),
@@ -216,6 +220,7 @@ module ARM (
 		.MEM_Dest(EXE_Reg_out_Dest),
 		.WB_WB_en(MEM_Stage_out_WB_EN),
 		.MEM_WB_en(EXE_Reg_out_WB_EN),
+		
 		.Sel_src1(Sel_src1),
 		.Sel_src2(Sel_src2)
 	);
@@ -251,6 +256,7 @@ module ARM (
 		.ALU_Res(MEM_Stage_Reg_out_ALU_result),
 		.MEM_Res(MEM_Stage_Reg_out_MEM_read_value),
 		.MEM_R_EN(MEM_Stage_out_MEM_R_EN),
+		
 		.out(Result_WB)
 	);
 

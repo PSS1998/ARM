@@ -8,25 +8,25 @@ module Val2Generate(
 
     reg[31:0] tempOut;
     wire[1:0] shift_mode;
-    assign shift_mode = Shift_operand[6:5];
-    
     reg[31:0] immediate32_rotate_shift_result;
     reg[31:0] immediate_rotate_shift_result;
    
+    assign shift_mode = Shift_operand[6:5];
+   
     integer i;
     integer j;
-	
     always @(*) begin
+      
 		immediate32_rotate_shift_result = Shift_operand[7:0];
 		immediate_rotate_shift_result = Val_Rm;
 
         for (i = 0; i < (Shift_operand[11:8]); i = i + 1) begin
             immediate32_rotate_shift_result = {immediate32_rotate_shift_result[1:0], immediate32_rotate_shift_result[31:2]};
         end
-
         for (j = 0; j < (Shift_operand[11:7]); j = j + 1) begin
             immediate_rotate_shift_result = {immediate_rotate_shift_result[0], immediate_rotate_shift_result[31:1]};
         end
+        
     end
 
     assign out = Mem_RW ? Shift_operand
