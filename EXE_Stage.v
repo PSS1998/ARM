@@ -13,25 +13,25 @@ module EXE_Stage(
   output[3:0] status
 );
 
-  wire[31:0] val2GenOut, val2GenIn, aluIn1;
+  wire[31:0] Val2GenerateOut, Val2GenerateIn, AluIn1;
   wire[31:0] Signed_imm_24_Sign_Extension;
 
   assign Signed_imm_24_Sign_Extension = Signed_imm_24[23] == 1'b1 ? {8'b11111111, Signed_imm_24} : {8'b0, Signed_imm_24};
   assign Br_addr = PC + (Signed_imm_24_Sign_Extension);
 
   // mux before ALU input 1 and 2
-  assign aluIn1 = sel_src1 == 2'd0 ? Val_Rn : sel_src1 == 2'd1 ? ALU_result_reg 
+  assign AluIn1 = sel_src1 == 2'd0 ? Val_Rn : sel_src1 == 2'd1 ? ALU_result_reg 
                   : sel_src1 == 2'd2 ? WB_WB_DEST : 32'bx;
-  assign val2GenIn = sel_src2 == 2'd0 ? Val_Rm : sel_src2 == 2'd1 ? ALU_result_reg 
+  assign Val2GenerateIn = sel_src2 == 2'd0 ? Val_Rm : sel_src2 == 2'd1 ? ALU_result_reg 
                   : sel_src2 == 2'd2 ? WB_WB_DEST : 32'bx;
                   
-  assign EXE_out_Val_Rm = val2GenIn;
+  assign EXE_out_Val_Rm = Val2GenerateIn;
   
 
-  ALU alu(.Val1(aluIn1), .Val2(val2GenOut), .EXE_CMD(EXE_CMD), .C_in(SR[1]), .Status_Bits(status), .ALU_Res(ALU_result));
+  ALU alu(.Val1(AluIn1), .Val2(Val2GenerateOut), .EXE_CMD(EXE_CMD), .C_in(SR[1]), .Status_Bits(status), .ALU_Res(ALU_result));
 
-  Val2Generate v2g(.Mem_RW(MEM_R_EN | MEM_W_EN), .Val_Rm(val2GenIn),
-                    .imm(imm), .Shift_operand(Shift_operand), .out(val2GenOut));
+  Val2Generate v2g(.Mem_RW(MEM_R_EN | MEM_W_EN), .Val_Rm(Val2GenerateIn),
+                    .imm(imm), .Shift_operand(Shift_operand), .out(Val2GenerateOut));
                     
   
 endmodule
