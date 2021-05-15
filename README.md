@@ -1,5 +1,5 @@
 # ARM CPU
-ARM CPU design with verilog ready for synthesis on FPGA.<br/>
+ARM CPU design with hazard detection and forwarding units, implemented with verilog and ready for synthesis on FPGA.<br/>
 Details of design are availible in ARM.pdf.<br/>
 <br/>
 
